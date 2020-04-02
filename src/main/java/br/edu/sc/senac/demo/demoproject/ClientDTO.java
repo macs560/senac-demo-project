@@ -1,29 +1,29 @@
 package br.edu.sc.senac.demo.demoproject;
 
 public class ClientDTO {
+	public static final ClientDTO NULL_VALUE = new ClientDTO("", "", "");
 
-	private String nome;
-	private String dataNascimento;
-	private int id;
-
+	private final String name;
+	private final String cargo;
+	private final String data;
 	
-	
-	public ClientDTO(String nome, String dataNascimento, int id) {
-		this.nome = nome;
-		this.dataNascimento = dataNascimento;
-		this.id = id;
+	public ClientDTO(final String name, final String cargo, final String data) {
+		this.name = name;
+		this.cargo = cargo;
+		this.data = data;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return this.name;
 	}
 
-	public String getDataNascimento() {
-		return dataNascimento;
+	public String getCargo() {
+		return this.cargo;
 	}
 
-	public int getId() {
-		return id;
+	public String getData() {
+		return this.data;
 	}
 
 }
+

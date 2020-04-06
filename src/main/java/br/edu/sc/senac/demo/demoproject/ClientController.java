@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import servicos.ClientDTO;
+
 @Controller
 public class ClientController {
 
@@ -23,6 +25,11 @@ public class ClientController {
 		int index = id.intValue();
 		ClientDTO client = clients.get(index);
 		return client;
+	}
+	ClientDTO removeClient(Long id) {
+		if (id >= clients.size() || id < 0) {
+			return ClientDTO.NULL_VALUE;
+		}
 	}
 	
 	/*Long insertClient(ClientDTO client) {

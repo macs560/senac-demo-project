@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import servicos.ClientDTO;
+
 @RestController
 @RequestMapping("/api/v1/client")
 
@@ -65,17 +67,16 @@ public class ClientService {
 		}		
 		return new ResponseEntity<>(client, HttpStatus.OK);
 	}
-/*
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ClientDTO> removeClient(@PathVariable Long id) {
-		if (id >= clients.size()|| id < 0) {
+		ClientDTO client = this.clientController.removeClient(id);
+		if (client.equals(ClientDTO.NULL_VALUE)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		int index = id.intValue();
-		ClientDTO client = clients.remove(index);
-		return new ResponseEntity<>(client, HttpStatus.OK);
 	}
-
+	
+	/*
 	@PostMapping("/addpayload")
 public Long addClient(@RequestBody ClientDTO client) {
 		clients.add(client);

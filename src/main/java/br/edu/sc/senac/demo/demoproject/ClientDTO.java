@@ -2,7 +2,6 @@ package br.edu.sc.senac.demo.demoproject;
 
 public class ClientDTO {
 	public static final ClientDTO NULL_VALUE = new ClientDTO("", "", "");
-
 	private final String name;
 	private final String cargo;
 	private final String data;

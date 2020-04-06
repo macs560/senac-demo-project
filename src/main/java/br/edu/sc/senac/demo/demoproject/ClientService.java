@@ -45,24 +45,27 @@ public class ClientService {
 		
 		client = new ClientDTO("Marcelo","Colaborador", "21/10/1970");
 		clients.add(client);
-	} */
+	} 
 	
 	@GetMapping("/list")
 	public List<ClientDTO> list() {
 		return this.clientController.getAllClients();
 	}
-	@PostMapping
+	/*@PostMapping
 	public Long insertClient(@RequestBody final ClientDTO client) {
 		return this.clientController.insertClient(client);
-	}
+	}*/
 
 
 	@GetMapping("/{id}/details")
 	public ResponseEntity<ClientDTO> getClient(@PathVariable Long id) {
-		ResponseEntity<ClientDTO> client = this.clientController.getClient(id);
-		return client;
+		ClientDTO client = this.clientController.getClient(id);
+		if(client.equals(ClientDTO.NULL_VALUE)) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND); 
+		}		
+		return new ResponseEntity<>(client, HttpStatus.OK);
 	}
-
+/*
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ClientDTO> removeClient(@PathVariable Long id) {
 		if (id >= clients.size()|| id < 0) {
@@ -89,5 +92,5 @@ public Long addClient(@RequestBody ClientDTO client) {
 	ClientDTO oldClient = clients.remove(index);
 	clients.add(index, updatedClient);
 	return new ResponseEntity<>(oldClient, HttpStatus.OK);
-	}
-}}
+	}*/
+}

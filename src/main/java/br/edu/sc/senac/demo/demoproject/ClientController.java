@@ -16,20 +16,19 @@ public class ClientController {
 		return clients;
 	}
 
-	Long insertClient(ClientDTO client) {
+	ClientDTO getClient(Long id) {
+		if(id >= clients.size() || id < 0) {
+			return ClientDTO.NULL_VALUE;
+		}
+		int index = id.intValue();
+		ClientDTO client = clients.get(index);
+		return client;
+	}
+	
+	/*Long insertClient(ClientDTO client) {
 		clients.add(client);
 		Long id = Long.valueOf(clients.size() - 1);
 		return id;
-	}
-
-	ResponseEntity <ClientDTO> getClient(Long id) {
-		if (id >= clients.size()|| id < 0) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		int index = id.intValue();
-		ClientDTO client = clients.remove(index);
-		return new ResponseEntity<>(client, HttpStatus.OK);
-	}
-	
-	
+	}*/
+		
 }

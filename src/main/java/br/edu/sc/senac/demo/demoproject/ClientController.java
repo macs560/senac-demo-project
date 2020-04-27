@@ -2,40 +2,85 @@ package br.edu.sc.senac.demo.demoproject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import java.util.Optional;
 import org.springframework.stereotype.Controller;
 
-import servicos.ClientDTO;
-
 @Controller
-public class ClientController {
+final class ClientController {
 
-	List<ClientDTO> clients = new ArrayList<>();
+	private final ClientRepository clientRepository;
+
+	ClientController(final ClientRepository clientRepository) {
+		this.clientRepository = clientRepository;
+	}
+
+	private static void updateEntityFromDTO(final ClientDTO clientDTO, final ClientEntity clientEntity) {
+		clientEntity.setName(clientDTO.getName());
+		clientEntity.setCargo(clientDTO.getCargo());
+		clientEntity.setdataNascimento(clientDTO.getData());
+	}
+
+	private static ClientEntity toEntity(final ClientDTO clientDTO) {
+		final String name = clientDTO.getName();
+		final String cargo = clientDTO.getCargo();
+		final String dataNascimento = clientDTO.getData();
+		return new ClientEntity(name, cargo, dataNascimento);
+	}
+
+	private static ClientDTO toDTO(final ClientEntity clientEntity) {
+		final Long id = clientEntity.getClientId();
+		final String name = clientEntity.getName();
+		final String cargo = clientEntity.getCargo();
+		final String dataNascimento = clientEntity.getdataNascimento();
+		return new ClientDTO(id, name, cargo, dataNascimento);
+	}
 
 	List<ClientDTO> getAllClients() {
+		final List<ClientDTO> clients = new ArrayList<>();
+
+		final Iterable<ClientEntity> entities = this.clientRepository.findAll();
+		for (final ClientEntity clientEntity : entities) {
+			ClientDTO clientDTO = ClientController.toDTO(clientEntity);
+			clients.add(clientDTO);
+		}
 		return clients;
 	}
 
-	ClientDTO getClient(Long id) {
-		if(id >= clients.size() || id < 0) {
-			return ClientDTO.NULL_VALUE;
+	ClientDTO getClient(final Long id) {
+		final Optional<ClientEntity> optionalClient = this.clientRepository.findById(id);
+		if (optionalClient.isPresent()) {
+			ClientEntity clientEntity = optionalClient.get();
+			return ClientController.toDTO(clientEntity);
 		}
-		int index = id.intValue();
-		ClientDTO client = clients.get(index);
-		return client;
+		return ClientDTO.NULL_VALUE;
 	}
-	ClientDTO removeClient(Long id) {
-		if (id >= clients.size() || id < 0) {
-			return ClientDTO.NULL_VALUE;
+
+	ClientDTO removeClient(final Long id) {
+		final Optional<ClientEntity> optionalClient = this.clientRepository.findById(id);
+		if (optionalClient.isPresent()) {
+			final ClientEntity clientEntity = optionalClient.get();
+			this.clientRepository.delete(clientEntity);
+			return ClientController.toDTO(clientEntity);
 		}
+		return ClientDTO.NULL_VALUE;
 	}
-	
-	/*Long insertClient(ClientDTO client) {
-		clients.add(client);
-		Long id = Long.valueOf(clients.size() - 1);
-		return id;
-	}*/
-		
+
+	Long insertClient(final ClientDTO clientDTO) {
+		final ClientEntity clientEntity = ClientController.toEntity(clientDTO);
+		this.clientRepository.save(clientEntity);
+		return clientEntity.getClientId();
+	}
+
+	ClientDTO updateClient(final Long id, final ClientDTO clientDTO) {
+		final Optional<ClientEntity> optionalClient = this.clientRepository.findById(id);
+		if (optionalClient.isPresent()) {
+			final ClientEntity clientEntity = optionalClient.get();
+			final ClientDTO oldClientDTO = ClientController.toDTO(clientEntity);
+			ClientController.updateEntityFromDTO(clientDTO, clientEntity);
+			this.clientRepository.save(clientEntity);
+			return oldClientDTO;
+		}
+		return ClientDTO.NULL_VALUE;
+	}
+
 }

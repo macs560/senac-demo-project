@@ -1,6 +1,5 @@
 package br.edu.sc.senac.demo.demoproject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -19,69 +18,44 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class ClientService {
 
-	private List<ClientDTO> clients = new ArrayList<>();
+	private final ClientController clientController;
 
-	@PostMapping("/add-default")
-	public void addDefault() {
-
-		ClientDTO cl1 = new ClientDTO("macalister@senac.com", "Macalister", "21/10/2003");
-		clients.add(0, cl1);
-
-		ClientDTO cl2 = new ClientDTO("carlos@senac.com", "Carlos", "14/11/2001");
-		clients.add(1, cl2);
-
-		ClientDTO cl3 = new ClientDTO("joão@senac.com", "João", "02/09/2003");
-		clients.add(2, cl3);
-
+	ClientService(final ClientController clientController) {
+		this.clientController = clientController;
 	}
+
 
 	@GetMapping("/list")
-
 	public List<ClientDTO> list() {
-		return this.clients;
-
+		return this.clientController.getAllClients();
 	}
 
-	@GetMapping("{id}/details")
-	public ResponseEntity<ClientDTO> clientDeteils(@PathVariable final int id) {
-		if (id >= clients.size() || id < 0) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		ClientDTO client = clients.get(id);
-		if (client.equals(ClientDTO.NULL_VALUE)) {
+	@GetMapping("/{id}/details")
+	public ResponseEntity<ClientDTO> getClient(@PathVariable Long id) {
+		ClientDTO client = this.clientController.getClient(id);
+		if (ClientDTO.NULL_VALUE.equals(client)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(client, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ClientDTO> removeClient(@PathVariable final Long id) {
-		if (id >= clients.size() || id < 0) {
+	public ResponseEntity<ClientDTO> removeClient(@PathVariable Long id) {
+		ClientDTO removedClient = this.clientController.removeClient(id);
+		if (ClientDTO.NULL_VALUE.equals(removedClient)) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		int index = id.intValue();
-		ClientDTO client = clients.remove(index);
-		return new ResponseEntity<>(client, HttpStatus.OK);
-
+		return new ResponseEntity<>(removedClient, HttpStatus.OK);
 	}
 
-	@PostMapping("/addpayload")
-	public Long addClient(@RequestBody ClientDTO client) {
-		clients.add(client);
-		Long id = Long.valueOf(list().size() - 1);
-		return id;
-
-	}
-	
 	@PutMapping("/{id}")
-	public ResponseEntity<ClientDTO> updateClient(@PathVariable Long id, @RequestBody ClientDTO updateClient){
-		if(id >= clients.size() || id < 0) {
+	public ResponseEntity<ClientDTO> uptadeClient(@PathVariable Long id, @RequestBody ClientDTO updatedClient) {
+		ClientDTO oldClient = this.clientController.updateClient(id, updatedClient);
+		if (ClientDTO.NULL_VALUE.equals(oldClient)) {
+
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		int index = id.intValue();
-		ClientDTO oldClient = clients.remove(index);
-		clients.add(index, updateClient);
+
 		return new ResponseEntity<>(oldClient, HttpStatus.OK);
 	}
-	
 }
